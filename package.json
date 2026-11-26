@@ -1,6 +1,6 @@
 {
   "name": "my-app-space",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A little home for the things you make.",
   "author": "My app space",
   "main": "electron/main.cjs",
@@ -29,7 +29,8 @@
       "icon.svg"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "artifactName": "My-app-space-Setup.exe"
     },
     "nsis": {
       "oneClick": false,
@@ -39,7 +40,8 @@
     "publish": {
       "provider": "github",
       "owner": "cocomokotoko",
-      "repo": "an-stupid-idea"
+      "repo": "an-stupid-idea",
+      "releaseType": "release"
     }
   },
   "dependencies": {

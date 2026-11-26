@@ -18,16 +18,12 @@ support when opening the files directly.
 
 ## Windows desktop installer
 
-Install Node.js and the NSIS compiler, then run `npm install` followed by
-`npm run dist:win`. On Ubuntu or Debian, install NSIS with `sudo apt install
-nsis`. The Windows installer is created in the repository root as
-`My-app-space-Setup-1.0.0-x64.exe`, where it is easy to find. It creates Start
-menu and desktop shortcuts, and can be removed from Windows Settings. The app
-keeps its shortcuts locally on that computer.
+Install Node.js, then run `npm install` followed by `npm run dist:win` on
+Windows. The installer is created in `dist/My-app-space-Setup.exe`. It creates
+Start menu and desktop shortcuts, and can be removed from Windows Settings. The
+app keeps its shortcuts locally on that computer.
 
-The app and installation pages link to this generated file. To offer the
-download from a published website, upload the generated `.exe` alongside the
-website files.
+The app and installation pages link to the latest GitHub Release installer.
 
 Windows may show a SmartScreen warning because this community-built installer
 is not code-signed.
@@ -35,7 +31,11 @@ is not code-signed.
 ## App updates
 
 The desktop app checks GitHub Releases for a newer version, downloads updates
-in the background, and asks to restart when the update is ready. Set the
-`GH_TOKEN` environment variable with repository publishing permission before
-running `npm run dist:win:publish`, then publish a release for the matching
-semantic version in `package.json`.
+in the background, and asks to restart when the update is ready. Push a version
+tag such as `v1.0.1` to build and publish a Windows installer and updater
+metadata automatically.
+
+## Website
+
+The website is published to GitHub Pages from the `main` branch by a GitHub
+Actions workflow.

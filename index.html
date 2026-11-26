@@ -383,7 +383,7 @@
     <header>
       <div class="brand"><span class="brand-mark" aria-hidden="true">✳</span> My app space</div>
       <div class="header-actions">
-        <a class="download-link" href="https://github.com/cocomokotoko/an-stupid-idea/releases/download/latest/My-app-space-Setup-1.0.0-x64.exe" download title="Windows 10/11, 64-bit">Download for Windows</a>
+        <a class="download-link" href="https://github.com/cocomokotoko/an-stupid-idea/releases/latest/download/My-app-space-Setup.exe" download title="Windows 10/11, 64-bit">Download for Windows</a>
         <a class="install-button guide-button" id="install-guide" href="./install.html">How to install</a>
         <button class="install-button" id="install-app" type="button">Install app</button>
         <button class="add-button" id="open-add" type="button"><span aria-hidden="true">＋</span> Add an app</button>
@@ -598,22 +598,22 @@
         emojiOptions.replaceChildren();
         if (!emojiData) return;
         const normalized = query.trim().toLocaleLowerCase();
-        let shown = 0;
         for (const [id, emoji] of Object.entries(emojiData.emojis)) {
           const searchable = `${id} ${emoji.name} ${(emoji.keywords || []).join(" ")}`.toLocaleLowerCase();
           if (normalized && !searchable.includes(normalized)) continue;
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "emoji-option";
-          button.textContent = emoji.native;
-          button.title = emoji.name;
-          button.setAttribute("aria-label", emoji.name);
-          button.addEventListener("click", () => {
-            iconInput.value = emoji.native;
-            iconPreview.textContent = emoji.native;
-          });
-          emojiOptions.append(button);
-          if (++shown >= 800) break;
+          for (const skin of emoji.skins || []) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "emoji-option";
+            button.textContent = skin.native;
+            button.title = emoji.name;
+            button.setAttribute("aria-label", emoji.name);
+            button.addEventListener("click", () => {
+              iconInput.value = skin.native;
+              iconPreview.textContent = skin.native;
+            });
+            emojiOptions.append(button);
+          }
         }
       }
 

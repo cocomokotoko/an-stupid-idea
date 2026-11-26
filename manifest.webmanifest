@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "My app space",
+  "short_name": "My apps",
+  "description": "A little home for the things you make.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f4f0",
+  "theme_color": "#f5f4f0",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

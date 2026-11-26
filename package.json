@@ -1,0 +1,33 @@
+{
+  "name": "my-app-space",
+  "version": "1.0.0",
+  "description": "A little home for the things you make.",
+  "author": "My app space",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win dir --x64 && makensis installer.nsi"
+  },
+  "devDependencies": {
+    "electron": "45.5.0",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "com.myappspace.desktop",
+    "productName": "My app space",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*.cjs",
+      "index.html",
+      "install.html",
+      "manifest.webmanifest",
+      "icon.svg"
+    ],
+    "win": {
+      "target": "dir"
+    }
+  }
+}

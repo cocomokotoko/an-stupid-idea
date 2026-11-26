@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f4f0">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <title>My apps</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #20231f;
+      background: #f5f4f0;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --muted: #777b73;
+      --line: #e7e6df;
+      --green: #355d45;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 12% 0%, #e9eee4 0, transparent 38rem),
+        #f5f4f0;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .shell {
+      width: min(100% - 48px, 1040px);
+      margin: 0 auto;
+      padding: 48px 0 64px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 36px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border-radius: 12px;
+      color: white;
+      background: var(--green);
+      font-size: 19px;
+    }
+
+    .add-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 12px;
+      color: white;
+      background: var(--green);
+      font-weight: 650;
+      transition: background .15s, transform .15s;
+    }
+
+    .add-button:hover { background: #284a36; transform: translateY(-1px); }
+    .install-button {
+      display: none;
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: inherit;
+      background: #fffefa;
+      font-weight: 600;
+    }
+    .download-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid #cbd6c7;
+      border-radius: 12px;
+      color: var(--green);
+      background: #fffefa;
+      font-size: 13px;
+      font-weight: 650;
+      text-decoration: none;
+    }
+    .download-link:hover { background: #edf0e8; }
+    .guide-button { display: inline-flex; align-items: center; text-decoration: none; }
+    .add-button:focus-visible, .icon-button:focus-visible, input:focus-visible, .app-link:focus-visible {
+      outline: 3px solid #a9c5ae;
+      outline-offset: 3px;
+    }
+    .install-button:focus-visible, .download-link:focus-visible { outline: 3px solid #a9c5ae; outline-offset: 3px; }
+
+    main { padding-top: 54px; }
+
+    .intro {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(32px, 5vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -.055em;
+    }
+
+    .subtitle { margin: 0; color: var(--muted); font-size: 15px; }
+
+    .search {
+      width: min(100%, 240px);
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid #e1e1da;
+      border-radius: 12px;
+      background: #fffefa;
+      color: inherit;
+    }
+
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 14px;
+    }
+
+    .app-card {
+      position: relative;
+      min-height: 164px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 254, 250, .86);
+      box-shadow: 0 3px 12px #242b1d08;
+      transition: border-color .16s, box-shadow .16s, transform .16s;
+    }
+
+    .app-card:hover {
+      transform: translateY(-3px);
+      border-color: #cbd6c7;
+      box-shadow: 0 12px 25px #242b1d10;
+    }
+
+    .app-link {
+      display: flex;
+      min-height: 121px;
+      flex-direction: column;
+      align-items: flex-start;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .app-icon {
+      display: grid;
+      width: 52px;
+      height: 52px;
+      place-items: center;
+      margin-bottom: 17px;
+      border-radius: 16px;
+      background: #edf0e8;
+      font-size: 27px;
+    }
+
+    .app-name {
+      overflow: hidden;
+      width: 100%;
+      font-size: 15px;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .app-address {
+      overflow: hidden;
+      width: 100%;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .remove-button {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border: 0;
+      border-radius: 9px;
+      color: #777b73;
+      background: transparent;
+      font-size: 18px;
+      opacity: 0;
+    }
+
+    .app-card:hover .remove-button, .remove-button:focus-visible { opacity: 1; }
+    .remove-button:hover { color: #9c3c35; background: #f7e9e6; }
+
+    .empty-state {
+      display: grid;
+      min-height: 270px;
+      place-content: center;
+      justify-items: center;
+      padding: 28px;
+      border: 1px dashed #d7d9d0;
+      border-radius: 20px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      display: grid;
+      width: 54px;
+      height: 54px;
+      place-items: center;
+      margin-bottom: 14px;
+      border-radius: 18px;
+      background: #e9eee4;
+      font-size: 25px;
+    }
+
+    .empty-state h2 { margin: 0 0 7px; font-size: 17px; letter-spacing: -.02em; }
+    .empty-state p { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
+    .empty-state .add-button { min-height: 38px; }
+    .notice { min-height: 22px; margin: 18px 0 0; color: #9c3c35; font-size: 13px; }
+    .count { margin: 22px 0 0; color: var(--muted); font-size: 12px; }
+
+    dialog {
+      width: min(100% - 32px, 430px);
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      color: inherit;
+      background: #fffefa;
+      box-shadow: 0 24px 80px #17211630;
+    }
+
+    dialog::backdrop { background: #20282066; backdrop-filter: blur(3px); }
+    dialog h2 { margin: 0 0 6px; font-size: 22px; letter-spacing: -.035em; }
+    .dialog-copy { margin: 0 0 22px; color: var(--muted); font-size: 14px; }
+    .field { display: block; margin: 16px 0; font-size: 13px; font-weight: 650; }
+    .field input {
+      display: block;
+      width: 100%;
+      min-height: 43px;
+      margin-top: 7px;
+      padding: 0 12px;
+      border: 1px solid #dedfd7;
+      border-radius: 10px;
+      background: white;
+      color: inherit;
+    }
+    .field-hint { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; font-weight: 400; }
+    .dialog-error { min-height: 18px; margin: 0; color: #9c3c35; font-size: 13px; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 18px; }
+    .secondary-button {
+      min-height: 40px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: inherit;
+      background: transparent;
+      font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+      .shell { width: min(100% - 32px, 1040px); padding-top: 24px; }
+      header { flex-wrap: wrap; padding-bottom: 24px; }
+      main { padding-top: 38px; }
+      .intro { align-items: stretch; flex-direction: column; }
+      .search { width: 100%; }
+      .apps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .app-card { min-height: 150px; padding: 15px; }
+      .app-link { min-height: 119px; }
+      .remove-button { opacity: 1; }
+    }
+
+    @media (max-width: 360px) {
+      .brand { font-size: 14px; }
+      .add-button { padding: 0 12px; }
+      .apps-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✳</span> My app space</div>
+      <div class="header-actions">
+        <a class="download-link" href="./My-app-space-Setup-1.0.0-x64.exe" download title="Windows 10/11, 64-bit">Download for Windows</a>
+        <a class="install-button guide-button" id="install-guide" href="./install.html">How to install</a>
+        <button class="install-button" id="install-app" type="button">Install app</button>
+        <button class="add-button" id="open-add" type="button"><span aria-hidden="true">＋</span> Add an app</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <h1 id="page-title">Your apps</h1>
+          <p class="subtitle">A little home for the things you make.</p>
+        </div>
+        <input class="search" id="search" type="search" placeholder="Find an app..." aria-label="Find an app" hidden>
+      </section>
+      <section id="apps-grid" class="apps-grid" aria-label="Your apps"></section>
+      <section id="empty-state" class="empty-state" hidden>
+        <span class="empty-icon" aria-hidden="true">✳</span>
+        <h2>Your space, your apps.</h2>
+        <p>Add a link to something you made to get started.</p>
+        <button class="add-button" id="empty-add" type="button"><span aria-hidden="true">＋</span> Add your first app</button>
+      </section>
+      <p class="notice" id="notice" role="status" aria-live="polite"></p>
+      <p class="count" id="count" hidden></p>
+    </main>
+  </div>
+
+  <dialog id="add-dialog" aria-labelledby="dialog-title">
+    <form id="app-form">
+      <h2 id="dialog-title">Add your app</h2>
+      <p class="dialog-copy">Save a shortcut to an app you made.</p>
+      <label class="field">
+        App name
+        <input id="app-name" name="name" maxlength="50" placeholder="My cool app" required autocomplete="off">
+      </label>
+      <label class="field">
+        App address
+        <input id="app-url" name="url" maxlength="2048" placeholder="https://my-app.example" required autocomplete="url" inputmode="url">
+        <span class="field-hint">Paste its web address. Local paths like /my-app also work.</span>
+      </label>
+      <label class="field">
+        Icon
+        <input id="app-icon-input" name="icon" maxlength="8" value="✨" placeholder="✨" autocomplete="off">
+        <span class="field-hint">Choose an emoji to recognize it.</span>
+      </label>
+      <p class="dialog-error" id="dialog-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button class="secondary-button" id="cancel-add" type="button">Cancel</button>
+        <button class="add-button" type="submit">Save app</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "my-app-space.apps.v1";
+      const grid = document.querySelector("#apps-grid");
+      const emptyState = document.querySelector("#empty-state");
+      const search = document.querySelector("#search");
+      const notice = document.querySelector("#notice");
+      const count = document.querySelector("#count");
+      const dialog = document.querySelector("#add-dialog");
+      const form = document.querySelector("#app-form");
+      const nameInput = document.querySelector("#app-name");
+      const urlInput = document.querySelector("#app-url");
+      const iconInput = document.querySelector("#app-icon-input");
+      const dialogError = document.querySelector("#dialog-error");
+      const installButton = document.querySelector("#install-app");
+      if (new URLSearchParams(location.search).has("desktop-app")) {
+        document.querySelector("#install-guide").remove();
+      }
+      let installPrompt;
+      let apps = [];
+      let storageAvailable = true;
+
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved !== null) {
+          const parsed = JSON.parse(saved);
+          if (!Array.isArray(parsed) || !parsed.every((app) =>
+            app && typeof app.id === "string" && typeof app.name === "string" &&
+            typeof app.url === "string" && typeof app.icon === "string"
+          )) {
+            throw new Error("Saved app list has an invalid format.");
+          }
+          apps = parsed;
+        }
+      } catch (error) {
+        storageAvailable = false;
+        notice.textContent = `Could not load your saved apps: ${error.message}`;
+      }
+
+      function saveApps() {
+        if (!storageAvailable) {
+          notice.textContent = "Your saved apps could not be loaded, so changes were not saved.";
+          return false;
+        }
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
+          notice.textContent = "";
+          return true;
+        } catch (error) {
+          notice.textContent = `Could not save your app: ${error.message}`;
+          return false;
+        }
+      }
+
+      function safeAddress(value) {
+        const input = value.trim();
+        const candidate = input.startsWith("/")
+          ? new URL(input, location.origin)
+          : new URL(/^[a-zA-Z][a-zA-Z\d+.-]*:/.test(input) ? input : `https://${input}`);
+        if (candidate.protocol !== "http:" && candidate.protocol !== "https:") {
+          throw new Error("Use a web address starting with http:// or https://.");
+        }
+        return candidate.href;
+      }
+
+      function render() {
+        const query = search.value.trim().toLocaleLowerCase();
+        const shownApps = apps.filter((app) =>
+          app.name.toLocaleLowerCase().includes(query) || app.url.toLocaleLowerCase().includes(query)
+        );
+        grid.replaceChildren();
+        for (const app of shownApps) {
+          const card = document.createElement("article");
+          card.className = "app-card";
+
+          const link = document.createElement("a");
+          link.className = "app-link";
+          link.href = app.url;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.setAttribute("aria-label", `Open ${app.name} in a new tab`);
+
+          const icon = document.createElement("span");
+          icon.className = "app-icon";
+          icon.setAttribute("aria-hidden", "true");
+          icon.textContent = app.icon;
+          const name = document.createElement("span");
+          name.className = "app-name";
+          name.textContent = app.name;
+          const address = document.createElement("span");
+          address.className = "app-address";
+          address.textContent = app.url;
+          link.append(icon, name, address);
+
+          const remove = document.createElement("button");
+          remove.className = "remove-button";
+          remove.type = "button";
+          remove.textContent = "×";
+          remove.setAttribute("aria-label", `Remove ${app.name}`);
+          remove.addEventListener("click", () => {
+            const previousApps = apps;
+            apps = apps.filter((item) => item.id !== app.id);
+            if (!saveApps()) apps = previousApps;
+            render();
+          });
+          card.append(link, remove);
+          grid.append(card);
+        }
+
+        const hasApps = apps.length > 0;
+        grid.hidden = !hasApps || shownApps.length === 0;
+        emptyState.hidden = hasApps;
+        search.hidden = !hasApps;
+        count.hidden = !hasApps;
+        count.textContent = `${apps.length} ${apps.length === 1 ? "app" : "apps"} made yours`;
+        if (hasApps && shownApps.length === 0) {
+          grid.hidden = false;
+          const message = document.createElement("p");
+          message.className = "subtitle";
+          message.textContent = "No apps match that search.";
+          grid.append(message);
+        }
+      }
+
+      function openDialog() {
+        dialogError.textContent = "";
+        form.reset();
+        iconInput.value = "✨";
+        dialog.showModal();
+        nameInput.focus();
+      }
+
+      document.querySelector("#open-add").addEventListener("click", openDialog);
+      document.querySelector("#empty-add").addEventListener("click", openDialog);
+      document.querySelector("#cancel-add").addEventListener("click", () => dialog.close());
+      search.addEventListener("input", render);
+
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        installPrompt = event;
+        installButton.style.display = "inline-flex";
+      });
+      installButton.addEventListener("click", async () => {
+        if (!installPrompt) return;
+        await installPrompt.prompt();
+        installPrompt = null;
+        installButton.style.display = "none";
+      });
+      window.addEventListener("appinstalled", () => {
+        installPrompt = null;
+        installButton.style.display = "none";
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        dialogError.textContent = "";
+        let url;
+        try {
+          url = safeAddress(urlInput.value);
+        } catch (error) {
+          dialogError.textContent = error.message;
+          urlInput.focus();
+          return;
+        }
+
+        const app = {
+          id: crypto.randomUUID(),
+          name: nameInput.value.trim(),
+          url,
+          icon: iconInput.value.trim() || "✨"
+        };
+        apps = [...apps, app];
+        if (!saveApps()) {
+          apps = apps.filter((item) => item.id !== app.id);
+          return;
+        }
+        dialog.close();
+        search.value = "";
+        render();
+      });
+
+      render();
+      if ("serviceWorker" in navigator && location.protocol !== "file:") {
+        navigator.serviceWorker.register("./service-worker.js").catch((error) => {
+          notice.textContent = `Offline support could not be enabled: ${error.message}`;
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

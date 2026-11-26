@@ -21,14 +21,7 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Build Windows installer
-        run: npm run dist:win
-      - name: Publish GitHub release with updater metadata
-        uses: softprops/action-gh-release@v2
-        with:
-          name: My app space ${{ github.ref_name }}
-          make_latest: true
-          files: |
-            dist/My-app-space-Setup.exe
-            dist/latest.yml
-            dist/*.blockmap
+      - name: Build and publish Windows installer
+        run: npm run dist:win:publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

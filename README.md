@@ -38,4 +38,5 @@ metadata automatically.
 ## Website
 
 The website is published to GitHub Pages from the `main` branch by a GitHub
-Actions workflow.
+Actions workflow. Enable GitHub Pages once in repository Settings → Pages by
+choosing GitHub Actions as the build and deployment source.

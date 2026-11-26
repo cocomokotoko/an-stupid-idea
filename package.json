@@ -1,6 +1,6 @@
 {
   "name": "my-app-space",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A little home for the things you make.",
   "author": "My app space",
   "main": "electron/main.cjs",

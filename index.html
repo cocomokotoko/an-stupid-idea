@@ -281,6 +281,72 @@
       color: inherit;
     }
     .field-hint { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; font-weight: 400; }
+    .icon-row { display: grid; grid-template-columns: 54px 1fr; gap: 9px; align-items: end; }
+    .icon-preview {
+      display: grid;
+      width: 54px;
+      height: 43px;
+      place-items: center;
+      border: 1px solid #dedfd7;
+      border-radius: 10px;
+      background: white;
+      font-size: 24px;
+    }
+    .emoji-picker {
+      margin-top: 8px;
+      border: 1px solid #dedfd7;
+      border-radius: 12px;
+      background: white;
+    }
+    .emoji-picker[hidden] { display: none; }
+    .emoji-search {
+      width: calc(100% - 16px);
+      min-height: 38px;
+      margin: 8px;
+      padding: 0 10px;
+      border: 1px solid #e3e4dc;
+      border-radius: 9px;
+      background: #fafaf7;
+    }
+    .emoji-options {
+      display: grid;
+      max-height: 230px;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 3px;
+      overflow-y: auto;
+      padding: 0 8px 8px;
+    }
+    .emoji-option {
+      display: grid;
+      aspect-ratio: 1;
+      place-items: center;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      font-size: 22px;
+    }
+    .emoji-option:hover, .emoji-option:focus-visible { background: #edf0e8; }
+    .update-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      padding: 10px 12px;
+      border: 1px solid #cbd6c7;
+      border-radius: 12px;
+      background: #edf0e8;
+      font-size: 13px;
+    }
+    .update-banner button {
+      min-height: 34px;
+      border: 0;
+      border-radius: 9px;
+      padding: 0 12px;
+      color: white;
+      background: var(--green);
+      font-weight: 650;
+    }
     .dialog-error { min-height: 18px; margin: 0; color: #9c3c35; font-size: 13px; }
     .dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 18px; }
     .secondary-button {
@@ -317,7 +383,7 @@
     <header>
       <div class="brand"><span class="brand-mark" aria-hidden="true">✳</span> My app space</div>
       <div class="header-actions">
-        <a class="download-link" href="./My-app-space-Setup-1.0.0-x64.exe" download title="Windows 10/11, 64-bit">Download for Windows</a>
+        <a class="download-link" href="https://github.com/cocomokotoko/an-stupid-idea/releases/download/latest/My-app-space-Setup-1.0.0-x64.exe" download title="Windows 10/11, 64-bit">Download for Windows</a>
         <a class="install-button guide-button" id="install-guide" href="./install.html">How to install</a>
         <button class="install-button" id="install-app" type="button">Install app</button>
         <button class="add-button" id="open-add" type="button"><span aria-hidden="true">＋</span> Add an app</button>
@@ -333,6 +399,10 @@
         <input class="search" id="search" type="search" placeholder="Find an app..." aria-label="Find an app" hidden>
       </section>
       <section id="apps-grid" class="apps-grid" aria-label="Your apps"></section>
+      <section class="update-banner" id="update-banner" aria-live="polite">
+        <span id="update-message"></span>
+        <button id="update-action" type="button" hidden>Update</button>
+      </section>
       <section id="empty-state" class="empty-state" hidden>
         <span class="empty-icon" aria-hidden="true">✳</span>
         <h2>Your space, your apps.</h2>
@@ -359,8 +429,15 @@
       </label>
       <label class="field">
         Icon
-        <input id="app-icon-input" name="icon" maxlength="8" value="✨" placeholder="✨" autocomplete="off">
-        <span class="field-hint">Choose an emoji to recognize it.</span>
+        <div class="icon-row">
+          <span class="icon-preview" id="icon-preview" aria-hidden="true">✨</span>
+          <input id="app-icon-input" name="icon" maxlength="32" value="✨" placeholder="✨" autocomplete="off">
+        </div>
+        <span class="field-hint">Choose from every emoji below.</span>
+        <div class="emoji-picker" id="emoji-picker" hidden>
+          <input class="emoji-search" id="emoji-search" type="search" placeholder="Search emojis..." aria-label="Search emojis">
+          <div class="emoji-options" id="emoji-options"></div>
+        </div>
       </label>
       <p class="dialog-error" id="dialog-error" role="alert"></p>
       <div class="dialog-actions">
@@ -383,6 +460,10 @@
       const nameInput = document.querySelector("#app-name");
       const urlInput = document.querySelector("#app-url");
       const iconInput = document.querySelector("#app-icon-input");
+      const iconPreview = document.querySelector("#icon-preview");
+      const emojiPicker = document.querySelector("#emoji-picker");
+      const emojiSearch = document.querySelector("#emoji-search");
+      const emojiOptions = document.querySelector("#emoji-options");
       const dialogError = document.querySelector("#dialog-error");
       const installButton = document.querySelector("#install-app");
       if (new URLSearchParams(location.search).has("desktop-app")) {
@@ -498,6 +579,10 @@
         dialogError.textContent = "";
         form.reset();
         iconInput.value = "✨";
+        iconPreview.textContent = "✨";
+        emojiPicker.hidden = false;
+        emojiSearch.value = "";
+        renderEmojiOptions("");
         dialog.showModal();
         nameInput.focus();
       }
@@ -506,6 +591,87 @@
       document.querySelector("#empty-add").addEventListener("click", openDialog);
       document.querySelector("#cancel-add").addEventListener("click", () => dialog.close());
       search.addEventListener("input", render);
+
+      let emojiData = null;
+
+      function renderEmojiOptions(query) {
+        emojiOptions.replaceChildren();
+        if (!emojiData) return;
+        const normalized = query.trim().toLocaleLowerCase();
+        let shown = 0;
+        for (const [id, emoji] of Object.entries(emojiData.emojis)) {
+          const searchable = `${id} ${emoji.name} ${(emoji.keywords || []).join(" ")}`.toLocaleLowerCase();
+          if (normalized && !searchable.includes(normalized)) continue;
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "emoji-option";
+          button.textContent = emoji.native;
+          button.title = emoji.name;
+          button.setAttribute("aria-label", emoji.name);
+          button.addEventListener("click", () => {
+            iconInput.value = emoji.native;
+            iconPreview.textContent = emoji.native;
+          });
+          emojiOptions.append(button);
+          if (++shown >= 800) break;
+        }
+      }
+
+      async function loadEmojiData() {
+        if (window.myAppDesktop?.getEmojiData) {
+          emojiData = await window.myAppDesktop.getEmojiData();
+        } else {
+          emojiData = await fetch("./emoji-data.json").then((response) => {
+            if (!response.ok) throw new Error("Could not load the emoji list.");
+            return response.json();
+          });
+        }
+        renderEmojiOptions(emojiSearch.value);
+      }
+
+      emojiSearch.addEventListener("input", () => renderEmojiOptions(emojiSearch.value));
+      iconInput.addEventListener("input", () => {
+        iconPreview.textContent = iconInput.value.trim() || "✨";
+      });
+      void loadEmojiData().catch((error) => {
+        dialogError.textContent = error.message;
+      });
+
+      const updateBanner = document.querySelector("#update-banner");
+      const updateMessage = document.querySelector("#update-message");
+      const updateAction = document.querySelector("#update-action");
+      let updateMode = null;
+
+      function showUpdate(status, message, action, mode) {
+        updateBanner.style.display = "flex";
+        updateMessage.textContent = message;
+        updateAction.hidden = !action;
+        updateAction.textContent = action || "";
+        updateMode = mode || null;
+      }
+
+      if (window.myAppDesktop?.onUpdateStatus) {
+        window.myAppDesktop.onUpdateStatus((update) => {
+          if (update.status === "available") {
+            showUpdate(update.status, `Version ${update.version} is available.`, "Download", "download");
+          } else if (update.status === "downloading") {
+            showUpdate(update.status, `Downloading update: ${Math.round(update.percent || 0)}%`);
+          } else if (update.status === "downloaded") {
+            showUpdate(update.status, `Version ${update.version} is ready to install.`, "Restart", "install");
+          } else if (update.status === "error") {
+            showUpdate(update.status, `Update error: ${update.message}`);
+          } else if (update.status === "current") {
+            showUpdate(update.status, `You are using the latest version (${update.version}).`);
+          } else if (update.status === "checking") {
+            showUpdate(update.status, "Checking for updates...");
+          }
+        });
+
+        updateAction.addEventListener("click", async () => {
+          if (updateMode === "download") await window.myAppDesktop.downloadUpdate();
+          if (updateMode === "install") await window.myAppDesktop.installUpdate();
+        });
+      }
 
       window.addEventListener("beforeinstallprompt", (event) => {
         event.preventDefault();

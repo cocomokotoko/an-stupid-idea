@@ -1,5 +1,5 @@
-const CACHE_NAME = "my-app-space-v1";
-const APP_FILES = ["./", "./index.html", "./install.html", "./manifest.webmanifest", "./icon.svg"];
+const CACHE_NAME = "my-app-space-v2";
+const APP_FILES = ["./", "./index.html", "./install.html", "./manifest.webmanifest", "./icon.svg", "./emoji-data.json"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_FILES)));

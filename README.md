@@ -31,3 +31,11 @@ website files.
 
 Windows may show a SmartScreen warning because this community-built installer
 is not code-signed.
+
+## App updates
+
+The desktop app checks GitHub Releases for a newer version, downloads updates
+in the background, and asks to restart when the update is ready. Set the
+`GH_TOKEN` environment variable with repository publishing permission before
+running `npm run dist:win:publish`, then publish a release for the matching
+semantic version in `package.json`.

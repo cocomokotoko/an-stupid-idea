@@ -6,7 +6,8 @@
   "main": "electron/main.cjs",
   "scripts": {
     "start": "electron .",
-    "dist:win": "electron-builder --win dir --x64 && makensis installer.nsi"
+    "dist:win": "electron-builder --win nsis --x64",
+    "dist:win:publish": "electron-builder --win nsis --x64 --publish always"
   },
   "devDependencies": {
     "electron": "45.5.0",
@@ -21,13 +22,28 @@
     },
     "files": [
       "electron/**/*.cjs",
+      "emoji-data.json",
       "index.html",
       "install.html",
       "manifest.webmanifest",
       "icon.svg"
     ],
     "win": {
-      "target": "dir"
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "cocomokotoko",
+      "repo": "an-stupid-idea"
     }
+  },
+  "dependencies": {
+    "@emoji-mart/data": "^1.2.1",
+    "electron-updater": "^6.8.11"
   }
 }
